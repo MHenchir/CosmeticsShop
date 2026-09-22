@@ -46,7 +46,11 @@ public sealed class OrderService
 
         return MapToDto(order);
     }
-
+    public async Task<OrderDto?> GetOrderAsync(Guid orderId, CancellationToken cancellationToken = default)
+    {
+        var order = await _orderRepository.GetByIdAsync(orderId, cancellationToken);
+        return order is null ? null : MapToDto(order);
+    }
     // Appelé après un paiement réussi (le futur IPaymentProvider, en Infrastructure)
     public async Task<OrderDto> ConfirmOrderAsync(Guid orderId, CancellationToken cancellationToken = default)
     {
