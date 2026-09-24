@@ -8,7 +8,8 @@ using CosmeticsShop.Application.Products;
 using CosmeticsShop.Infrastructure.Persistence;
 using CosmeticsShop.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
-
+using CosmeticsShop.Application.Chatbot;
+using CosmeticsShop.Infrastructure.Chatbot;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,9 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+// --- Chatbot ---
+builder.Services.AddHttpClient<IChatCompletionProvider, OpenAiChatCompletionProvider>();
+
 
 // --- Services (Application) ---
 builder.Services.AddScoped<ProductService>();
@@ -30,7 +34,7 @@ builder.Services.AddScoped<CustomerService>();
 builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddTransient<GlobalExceptionMiddleware>();
-
+builder.Services.AddScoped<ChatService>();
 // --- ASP.NET Core ---
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -46,6 +50,7 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod();
     });
 });
+
 
 var app = builder.Build();
 
