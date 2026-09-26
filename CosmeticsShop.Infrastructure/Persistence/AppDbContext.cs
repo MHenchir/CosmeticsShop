@@ -12,6 +12,7 @@ public sealed class AppDbContext : DbContext
     public DbSet<Customer> Customers => Set<Customer>();
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<Cart> Carts => Set<Cart>();
+    public DbSet<ChatConversation> ChatConversations => Set<ChatConversation>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

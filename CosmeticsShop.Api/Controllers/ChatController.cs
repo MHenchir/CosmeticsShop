@@ -17,10 +17,10 @@ public class ChatController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Ask(ChatRequest request, CancellationToken cancellationToken)
     {
-        var response = await _chatService.AskAsync(request.Message, cancellationToken);
+        var response = await _chatService.AskAsync(request.CustomerId, request.Message, cancellationToken);
         return Ok(new ChatResponse(response));
     }
 }
 
-public sealed record ChatRequest(string Message);
+public sealed record ChatRequest(Guid CustomerId, string Message);
 public sealed record ChatResponse(string Reply);
