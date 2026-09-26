@@ -25,7 +25,7 @@ builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 // --- Chatbot ---
 builder.Services.AddHttpClient<IChatCompletionProvider, OpenAiChatCompletionProvider>();
-
+builder.Services.AddScoped<IChatConversationRepository, ChatConversationRepository>();
 
 // --- Services (Application) ---
 builder.Services.AddScoped<ProductService>();
