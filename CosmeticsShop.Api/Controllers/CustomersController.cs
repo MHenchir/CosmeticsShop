@@ -14,15 +14,6 @@ public class CustomersController : ControllerBase
         _customerService = customerService;
     }
 
-    [HttpPost]
-    public async Task<IActionResult> RegisterCustomer(RegisterCustomerRequest request, CancellationToken cancellationToken)
-    {
-        var dto = await _customerService.RegisterCustomerAsync(
-            request.FirstName, request.LastName, request.Email, request.PhoneNumber, cancellationToken);
-
-        return CreatedAtAction(nameof(GetCustomer), new { id = dto.Id }, dto);
-    }
-
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetCustomer(Guid id, CancellationToken cancellationToken)
     {
@@ -30,6 +21,3 @@ public class CustomersController : ControllerBase
         return dto is null ? NotFound() : Ok(dto);
     }
 }
-
-public sealed record RegisterCustomerRequest(
-    string FirstName, string LastName, string Email, string? PhoneNumber);

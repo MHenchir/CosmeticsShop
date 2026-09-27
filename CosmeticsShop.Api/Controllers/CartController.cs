@@ -1,10 +1,12 @@
 ﻿using CosmeticsShop.Application.Carts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CosmeticsShop.Api.Controllers;
 
 [ApiController]
 [Route("api/cart")]
+[Authorize]
 public class CartController : ControllerBase
 {
     private readonly CartService _cartService;
@@ -17,25 +19,33 @@ public class CartController : ControllerBase
     [HttpPost("items")]
     public async Task<IActionResult> AddToCart(AddToCartRequest request, CancellationToken cancellationToken)
     {
-        var dto = await _cartService.AddToCartAsync(
-            request.CustomerId, request.ProductId, request.Quantity, cancellationToken);
-
+        var customerId = GetCustomerIdFromToken();
+        var dto = await _cartService.AddToCartAsync(customerId, request.ProductId, request.Quantity, cancellationToken);
         return Ok(dto);
     }
 
-    [HttpGet("{customerId:guid}")]
-    public async Task<IActionResult> GetCart(Guid customerId, CancellationToken cancellationToken)
+    [HttpGet]
+    public async Task<IActionResult> GetCart(CancellationToken cancellationToken)
     {
+        var customerId = GetCustomerIdFromToken();
         var dto = await _cartService.GetCartAsync(customerId, cancellationToken);
         return dto is null ? NotFound() : Ok(dto);
     }
 
-    [HttpDelete("{customerId:guid}/items/{productId:guid}")]
-    public async Task<IActionResult> RemoveFromCart(Guid customerId, Guid productId, CancellationToken cancellationToken)
+    [HttpDelete("items/{productId:guid}")]
+    public async Task<IActionResult> RemoveFromCart(Guid productId, CancellationToken cancellationToken)
     {
+        var customerId = GetCustomerIdFromToken();
         var dto = await _cartService.RemoveFromCartAsync(customerId, productId, cancellationToken);
         return Ok(dto);
     }
+
+    private Guid GetCustomerIdFromToken()
+    {
+        var customerIdClaim = User.FindFirst("customerId")?.Value
+            ?? throw new InvalidOperationException("Token invalide : customerId manquant.");
+        return Guid.Parse(customerIdClaim);
+    }
 }
 
-public sealed record AddToCartRequest(Guid CustomerId, Guid ProductId, int Quantity);
+public sealed record AddToCartRequest(Guid ProductId, int Quantity);
